@@ -7,11 +7,15 @@ M.config = {
   normal_mode = true,
 }
 
-local function center()
+local function center(insert_mode)
   local line = vim.api.nvim_win_get_cursor(0)[1]
   if line ~= vim.b.last_line then
     vim.cmd("norm! zz")
     vim.b.last_line = line
+    if insert_mode then
+      local column = vim.fn.getcurpos()[5]
+      vim.fn.cursor(line, column)
+    end
   end
 end
 
@@ -24,7 +28,7 @@ function M.setup(opts)
     vim.api.nvim_create_autocmd("CursorMoved", {
       group = g,
       callback = function ()
-        center()
+        center(false)
       end,
     })
   end
@@ -33,9 +37,7 @@ function M.setup(opts)
     vim.api.nvim_create_autocmd("CursorMovedI", {
       group = g,
       callback = function ()
-        center()
-        local column = vim.fn.getcurpos()[5]
-        vim.fn.cursor(line, column)
+        center(true)
       end,
     })
   end
